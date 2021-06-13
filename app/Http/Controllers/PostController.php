@@ -7,98 +7,77 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $posts = Post::all();
-
-        return view('posts.index', compact('posts'));
+    protected $posts;
+    
+    public function __construct(Post $post){
+        $this->posts = $post;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-       return view('posts.create');
+    // Exibe todos os registros
+    public function index(){
+        $posts = $this->posts->all();
+        return view('posts.index',["posts" => $posts]);
+        // return view('index',["posts" => $posts])->with('success','Bem Vindo.');
+    }
+    
+    // Exibe um unico registro
+    public function show($id){
+        $post = $this->posts->find($id);
+        return view('posts.show',compact('post'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
+    // Rota Cadastrar
+    public function create(){
+        return view('posts.create');
+    }
+    // Metodo Cadastrar
+    public function store(Request $request){
+        //efetua a parte de validacao
         $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-        ]);
+            'title'=>'required|string|max:50|min:2',
+            'description'=>'required|string|min:1|max:150'
+            ]);
+        
+        //efetua parte de gravação
+        $post = $request->all();//resgata web
+        $this->posts->setTitle($request->title);
+        $this->posts->setDescription($request->description);
 
-        Post::create($request->all());
+        $this->posts->create($post);//grava
 
-        return redirect()->route('posts.index')->with('success','Post created successfully.');
+        return redirect('/index');
+        // return redirect()->route('/index')->with('success','Registro cadastrado com sucesso!');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Post $post)
-    {
-      return view('posts.show',compact('post'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Post $post)
-    {
+    // Rota Editar
+    public function edit($id){
+        $post = $this->posts->find($id);
         return view('posts.edit',compact('post'));
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Post $post)
-    {
+    // Metodo Editar
+    public function update(Request $request){
+        //efetua a parte de validacao
         $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-        ]);
+            'title'=>'required|string|max:50|min:2',
+            'description'=>'required|string|min:1|max:150'
+            ]);
+        
+            $id = $request->id;
+            $post = Post::findOrFail($id);
+            $post->title=$request->title;
+            $post->description=$request->description;
+            $post->save();
 
-        $post->update($request->all());
-
-        return redirect()->route('posts.index')->with('success','Post updated successfully');
+            return redirect('/index');
+            return redirect()->route('/index')->with('success','Registro editado com sucesso!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Post $post)
-    {
-      $post->delete();
-
-       return redirect()->route('posts.index')
-                       ->with('success','post deleted successfully');
+    // Metodo Deletar
+    public function destroy($id){
+        $post = $this->posts->find($id);
+        $post->delete();
+        return redirect('/index');
+        // return redirect()->route('/index')->with('success','Registro deletado com sucesso!');
     }
+    
 }

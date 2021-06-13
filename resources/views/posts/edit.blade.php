@@ -5,7 +5,7 @@
                 <h2>Edit Post</h2>
             </div>
             <div class="pull-right">
-                <a class="btn btn-primary" href="{{ route('posts.index') }}"> Back</a>
+                <a class="btn btn-primary" href="{{ route('index') }}"> Back</a>
             </div>
         </div>
     </div>
@@ -20,14 +20,15 @@
         </div>
     @endif
 
-    <form action="{{ route('posts.update',$post->id) }}" method="POST">
+    <form action="{{ route('update') }}" method="POST">
         @csrf
 
-        @method('PUT')
+
          <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12">
                 <div class="form-group">
                     <strong>Title:</strong>
+                    <input type="hidden" name="id" value="{{ $post->id }}">
                     <input type="text" name="title" value="{{ $post->title }}" class="form-control" placeholder="Title">
                 </div>
             </div>

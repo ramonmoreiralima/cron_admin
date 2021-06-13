@@ -17,7 +17,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('posts', PostController::class);
+// Route::resource('posts', PostController::class);
+Route::get('/index','PostController@index')->name('index');
+Route::get('/show/{id}','PostController@show')->name('show');
+
+Route::get('/create','PostController@create')->name('create');
+Route::post('/store','PostController@store')->name('store');
+
+# Route::post('/edit','PostController@edit')->name('edit');
+Route::get('/edit/{id}','PostController@edit')->name('edit');
+Route::post('/update','PostController@update')->name('update');
+
+Route::get('/destroy/{id}','PostController@destroy')->name('destroy');
 
 
 // Route::get('/findJsonById/{id}','ClienteController@findJsonById')->name('findJsonById');
